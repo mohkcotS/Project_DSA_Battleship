@@ -15,15 +15,12 @@ public class Board {
     public final int ship4 = 4;
     public final int ship5 = 5;
 
-    public String [] status;
     GamePanel gp;
 
     public Board(GamePanel gp){
         this.gp = gp;
         this.boardPlayer = new int[10][10];
         this.boardComputer = new int[10][10];
-        this.status = new String[10];
-        setupStatus();
     }
 
    public void setUpBoardPlayer(int col, int row, int value){
@@ -34,16 +31,5 @@ public class Board {
         return boardPlayer[col][row];
    }
 
-   public void checkSetup(int shipSetUp){
-
-
-   }
-
-   public void setupStatus(){
-        status[0] = "Set up successfully";
-        status[1] = "Unsuitable size";
-        status[2] = "Invalid position";
-
-    }
 
 }

@@ -5,13 +5,18 @@ public class UI {
 
     GamePanel gp;
     Graphics2D g2;
-    Font font1,font1a,font2;
+    Font font1,font1a,font1b,font2;
+
+    String [] status;
+
+    public int statusNo=3;
 
     Button b1,b2,b3,b4,b5,play;
     public UI(GamePanel gp){
         this.gp = gp;
         font1 = new Font("Times New Roman",Font.BOLD,15);
-        font1a = new Font("Times New Roman",Font.BOLD,25);
+        font1a = new Font("Times New Roman",Font.BOLD,20);
+        font1b = new Font("Times New Roman",Font.BOLD,25);
         font2 = new Font("Times New Roman",Font.BOLD,40);
         b1 = new Button("Ship 1");
         b2 = new Button("Ship 2");
@@ -26,6 +31,9 @@ public class UI {
         gp.add(b4);
         gp.add(b5);
         gp.add(play);
+
+        this.status = new String[10];
+        setupStatus();
 
     }
 
@@ -62,12 +70,6 @@ public class UI {
         // Player Board
         drawPlayerBoard();
 
-        //Title
-        g2.setFont(font2);
-        g2.setColor(new Color(0x90EE90));
-        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
-        g2.drawString("Set up Ships",center("Set up Ships",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
-
         //Set up area
         int x = gp.tileSize * 45/4;
         int y = gp.tileSize *2;
@@ -81,9 +83,136 @@ public class UI {
         g2.drawRoundRect(x,y,gp.tileSize*15/2,gp.tileSize*9/2,15,15);
         g2.drawRoundRect(x1,y1,gp.tileSize*15/2,gp.tileSize*11/4,15,15);
 
+        //Title
+        g2.setFont(font2);
+        g2.setColor(new Color(0x90EE90));
+        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
+        g2.drawString("Set up Ships",center("Set up Ships",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
+        g2.setFont(font1b);
+        g2.setColor(Color.BLACK);
+        g2.drawString("Information",center("Information",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*21/8);
+        g2.drawString("Status",center("Status",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*59/8);
+
+        //Status
+        g2.setFont(font1a);
+        if(statusNo == 0){
+            g2.setColor(Color.GREEN);
+            g2.drawString("VALID",center("VALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
+        }
+        else{
+            g2.setColor(Color.RED);
+            g2.drawString("INVALID",center("INVALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
+        }
+        g2.setFont(font1);
+        g2.setColor(Color.BLACK);
+        g2.drawString(status[statusNo],center(status[statusNo],gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*69/8);
+
         //Button
         drawButton();
     }
+
+    public void drawPlayerBoard(){
+        int x = gp.tileSize * 5/4;
+        int y = gp.tileSize * 2;
+        int size = gp.tileSize * 3/4;
+        for(int i = 0; i<10;i++){
+            for(int j = 0; j<10;j++){
+                g2.setColor(new Color(0xFFFFE0));
+                if(gp.b.getFromBoardPlayer(j,i) == -1){
+                    g2.setColor(new Color(0xB4FFB4));
+                }
+
+                if(gp.b.getFromBoardPlayer(j,i) == -2){
+                    g2.setColor(new Color(0xA0DBFF));
+                }
+
+                if(gp.b.getFromBoardPlayer(j,i) == -3){
+                    g2.setColor(new Color(0xFFC09C));
+                }
+
+                if(gp.b.getFromBoardPlayer(j,i) == -4){
+                    g2.setColor(new Color(0xFF7C7C));
+                }
+
+                if(gp.b.getFromBoardPlayer(j,i) == -5){
+                    g2.setColor(new Color(0xFF5BEC));
+                }
+
+                g2.fillRect(x,y,size,size);
+                g2.setColor(Color.black);
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRect(x,y,size,size);
+
+                x+= size;
+            }
+            y+= size;
+            x = gp.tileSize * 5/4;
+        }
+
+        x = gp.tileSize * 5/4;
+        y = gp.tileSize * 15/8;
+        for(int i = 65; i<= 74; i++){
+            if(gp.mouse.col1 == i-65){
+                g2.setFont(font1b);
+                g2.setColor(new Color(0xFFD700));
+            }
+            else{
+                g2.setFont(font1);
+                g2.setColor(Color.white);
+            }
+            String s = String.valueOf((char)i);
+            g2.drawString(s,center(s,x,size),y);
+            x += size;
+        }
+
+        x = gp.tileSize*3/4;
+        y = gp.tileSize * 5/2;
+        for(int i = 0; i<= 9; i++){
+            if(gp.mouse.row1 == i){
+                g2.setFont(font1b);
+                g2.setColor(new Color(0xFFD700));
+            }
+            else{
+                g2.setFont(font1);
+                g2.setColor(Color.white);
+            }
+            g2.drawString(i+"",x,y);
+            y+= size;
+        }
+    }
+
+    public void drawButton(){
+        int x = gp.tileSize;
+        int y = gp.tileSize*21/2;
+        int width = gp.tileSize * 2;
+        int height = gp.tileSize;
+
+        b1.addActionListener(gp.action);
+        b1.setBounds(x,y,width,height);
+        x += gp.tileSize * 5/2;
+
+        b2.addActionListener(gp.action);
+        b2.setBounds(x,y,width,height);
+        x += gp.tileSize * 5/2;
+
+        b3.addActionListener(gp.action);
+        b3.setBounds(x,y,width,height);
+        x += gp.tileSize * 5/2;
+
+        b4.addActionListener(gp.action);
+        b4.setBounds(x,y,width,height);
+        x += gp.tileSize * 5/2;
+
+        b5.addActionListener(gp.action);
+        b5.setBounds(x,y,width,height);
+        x += gp.tileSize * 9/2;
+
+        play.addActionListener(gp.action);
+        play.setFont(font1b);
+        play.setBounds(x,y,width*2,height);
+
+    }
+
     public void drawGamePlay(){
         g2.setColor(new Color(0x003366));
         g2.fillRect(0,0,960,576);
@@ -145,112 +274,17 @@ public class UI {
         g2.setColor(new Color(0x90EE90));
         g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
         g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
-
-
+    }
+    public void setupStatus(){
+        status[0] = "Set up successfully";
+        status[1] = "Unsuitable size";
+        status[2] = "Invalid position";
+        status[3] = "Ship's position has not been chosen";
+        status[4] = "Can not choose this position";
+        status[5] = "Incomplete set up ships";
 
     }
 
-    public void drawPlayerBoard(){
-        int x = gp.tileSize * 5/4;
-        int y = gp.tileSize * 2;
-        int size = gp.tileSize * 3/4;
-        for(int i = 0; i<10;i++){
-            for(int j = 0; j<10;j++){
-                g2.setColor(new Color(0xFFFFE0));
-                if(gp.b.getFromBoardPlayer(j,i) == -1){
-                    g2.setColor(new Color(0xB4FFB4));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -2){
-                    g2.setColor(new Color(0xA0DBFF));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -3){
-                    g2.setColor(new Color(0xFFC09C));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -4){
-                    g2.setColor(new Color(0xFF7C7C));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -5){
-                    g2.setColor(new Color(0xFF5BEC));
-                }
-
-                g2.fillRect(x,y,size,size);
-                g2.setColor(Color.black);
-                g2.setStroke(new BasicStroke(2));
-                g2.drawRect(x,y,size,size);
-
-                x+= size;
-            }
-            y+= size;
-            x = gp.tileSize * 5/4;
-        }
-
-        x = gp.tileSize * 5/4;
-        y = gp.tileSize * 15/8;
-        for(int i = 65; i<= 74; i++){
-            if(gp.mouse.col1 == i-65){
-                g2.setFont(font1a);
-                g2.setColor(new Color(0xFFD700));
-            }
-            else{
-                g2.setFont(font1);
-                g2.setColor(Color.white);
-            }
-            String s = String.valueOf((char)i);
-            g2.drawString(s,center(s,x,size),y);
-            x += size;
-        }
-
-        x = gp.tileSize*3/4;
-        y = gp.tileSize * 5/2;
-        for(int i = 0; i<= 9; i++){
-            if(gp.mouse.row1 == i){
-                g2.setFont(font1a);
-                g2.setColor(new Color(0xFFD700));
-            }
-            else{
-                g2.setFont(font1);
-                g2.setColor(Color.white);
-            }
-            g2.drawString(i+"",x,y);
-            y+= size;
-        }
-    }
-
-    public void drawButton(){
-        int x = gp.tileSize;
-        int y = gp.tileSize*21/2;
-        int width = gp.tileSize * 2;
-        int height = gp.tileSize;
-
-        b1.addActionListener(gp.action);
-        b1.setBounds(x,y,width,height);
-        x += gp.tileSize * 5/2;
-
-        b2.addActionListener(gp.action);
-        b2.setBounds(x,y,width,height);
-        x += gp.tileSize * 5/2;
-
-        b3.addActionListener(gp.action);
-        b3.setBounds(x,y,width,height);
-        x += gp.tileSize * 5/2;
-
-        b4.addActionListener(gp.action);
-        b4.setBounds(x,y,width,height);
-        x += gp.tileSize * 5/2;
-
-        b5.addActionListener(gp.action);
-        b5.setBounds(x,y,width,height);
-        x += gp.tileSize * 9/2;
-
-        play.addActionListener(gp.action);
-        play.setFont(font1a);
-        play.setBounds(x,y,width*2,height);
-
-    }
     public int center(String s, int x ,  int size) {
         int textWidth = (int) g2.getFontMetrics().getStringBounds(s, g2).getWidth();
         return x + (size - textWidth) / 2;
