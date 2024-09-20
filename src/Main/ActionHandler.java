@@ -34,6 +34,8 @@ public class ActionHandler implements ActionListener {
         else if(e.getSource() == gp.ui.play){
             if(gp.player.canPlay()){
                 gp.gameState = gp.playState;
+                gp.mouse.col1 = -1;
+                gp.mouse.row1 = -1;
             }
         }
         if(e.getSource() != gp.ui.play){

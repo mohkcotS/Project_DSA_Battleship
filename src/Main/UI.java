@@ -5,7 +5,7 @@ public class UI {
 
     GamePanel gp;
     Graphics2D g2;
-    Font font1,font1a,font1b,font2;
+    Font font1,font1a,font1b,font1c,font2;
 
     String [] status;
 
@@ -17,6 +17,7 @@ public class UI {
         font1 = new Font("Times New Roman",Font.BOLD,15);
         font1a = new Font("Times New Roman",Font.BOLD,20);
         font1b = new Font("Times New Roman",Font.BOLD,25);
+        font1c = new Font("Times New Roman",Font.PLAIN,20);
         font2 = new Font("Times New Roman",Font.BOLD,40);
         b1 = new Button("Ship 1");
         b2 = new Button("Ship 2");
@@ -210,10 +211,10 @@ public class UI {
         play.addActionListener(gp.action);
         play.setFont(font1b);
         play.setBounds(x,y,width*2,height);
-
     }
 
     public void drawGamePlay(){
+        //Background and area
         g2.setColor(new Color(0x003366));
         g2.fillRect(0,0,960,576);
         g2.setColor(Color.black);
@@ -221,11 +222,37 @@ public class UI {
         g2.drawRect(2,2,956,572);
 
         g2.drawLine(0,10*gp.tileSize,20*gp.tileSize,10*gp.tileSize);
-        g2.drawLine(10*gp.tileSize,0,10*gp.tileSize,10*gp.tileSize);
+        g2.drawLine(10*gp.tileSize,0,10*gp.tileSize,12*gp.tileSize);
 
+        //Player Board
+        drawPlayerBoard();
+        //Computer Board
+        drawComputerBoard();
 
-        int x = gp.tileSize * 5/4;
-        int x1 = gp.tileSize * 45/4;
+        //Title
+        g2.setFont(font2);
+        g2.setColor(new Color(0x90EE90));
+        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
+        g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
+
+        //Header
+        g2.setColor(Color.WHITE);
+        g2.setFont(font1c);
+        g2.drawString("Player choose: ", gp.tileSize / 2, gp.tileSize * 43 / 4);
+        g2.drawString("Computer choose: ", gp.tileSize * 21 / 2, gp.tileSize * 43 / 4);
+        g2.setFont(font1b);
+        if(gp.mouse.colP != -1 && gp.mouse.rowP != -1 ) {
+            g2.drawString(""+((char)(gp.mouse.colP + 65)) + gp.mouse.rowP, gp.tileSize*7/2, 2+gp.tileSize * 43 / 4);
+        }
+        if(gp.mouse.colC != -1 && gp.mouse.rowC != -1 ) {
+            g2.drawString(""+((char)(gp.mouse.colC + 65)) + gp.mouse.rowC, gp.tileSize * 14, 2+gp.tileSize * 43 / 4);
+        }
+        //Select
+        drawSelectionTurn();
+    }
+
+    public void drawComputerBoard(){
+        int x = gp.tileSize * 45/4;
         int y = gp.tileSize * 2;
         int size = gp.tileSize * 3/4;
         for(int i = 0; i<10;i++){
@@ -235,46 +262,51 @@ public class UI {
                     g2.setColor(Color.GREEN);
                 }
                 g2.fillRect(x,y,size,size);
-                g2.fillRect(x1,y,size,size);
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
-                g2.drawRect(x1,y,size,size);
                 x+= size;
-                x1+= size;
             }
             y+= size;
-            x = gp.tileSize * 5/4;
-            x1 = gp.tileSize * 45/4;
+            x = gp.tileSize * 45/4;
         }
 
         g2.setColor(Color.white);
         g2.setFont(font1);
-        x = gp.tileSize * 5/4;
-        x1 = gp.tileSize * 45/4;
+        x = gp.tileSize * 45/4;
         y = gp.tileSize * 15/8;
         for(int i = 65; i<= 74; i++){
             String s = String.valueOf((char)i);
             g2.drawString(s,center(s,x,size),y);
-            g2.drawString(s,center(s,x1,size),y);
             x += size;
-            x1+= size;
         }
 
-        x = gp.tileSize;
-        x1 = gp.tileSize * 11;
+        x = gp.tileSize * 43/4;
         y = gp.tileSize * 5/2;
         for(int i = 0; i<= 9; i++){
             g2.drawString(i+"",x,y);
-            g2.drawString(i+"",x1 ,y);
             y+= size;
         }
-
-        g2.setFont(font2);
-        g2.setColor(new Color(0x90EE90));
-        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
-        g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
     }
+
+    public void drawSelectionTurn(){
+        if(gp.timer <= 500){
+            gp.b.turn = gp.b.playerTurn;
+            g2.setColor(Color.YELLOW);
+            g2.setStroke(new BasicStroke(5));
+            g2.drawRect(2,gp.tileSize*10,gp.tileSize*10 -2 ,gp.tileSize*2 - 2);
+        }
+        else {
+            gp.b.turn = gp.b.computerTurn;
+            g2.setColor(Color.YELLOW);
+            g2.setStroke(new BasicStroke(5));
+            g2.drawRect(gp.tileSize*10,gp.tileSize*10,gp.tileSize*10 - 2,gp.tileSize*2 - 2);
+            if(gp.timer == 1000){
+                gp.timer = 0;
+            }
+        }
+    }
+
     public void setupStatus(){
         status[0] = "Set up successfully";
         status[1] = "Unsuitable size";

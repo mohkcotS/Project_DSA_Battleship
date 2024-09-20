@@ -21,6 +21,8 @@ public class GamePanel extends JPanel implements Runnable {
     public MouseHandler mouse = new MouseHandler(this);
     public ActionHandler action = new ActionHandler(this);
 
+    public int timer;
+
     //GAMES STATES
 
     public int gameState;
@@ -29,8 +31,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int playState = 3;
 
     public void setupGame(){
-        gameState = setupState;
+        gameState = playState;
         b.shipSetUp = b.ship1;
+        timer = 0;
     }
 
 
@@ -71,6 +74,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update(){
+        timer++;
     }
 
     public void paintComponent(Graphics g){

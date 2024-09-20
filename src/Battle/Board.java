@@ -1,12 +1,14 @@
 package Battle;
-
-import Controller.Player;
 import Main.GamePanel;
-import Ship.Ship;
 
 public class Board {
     private int [][] boardPlayer;
     private int [][] boardComputer;
+
+
+    public int turn = 0;
+    public int playerTurn = 0;
+    public int computerTurn = 1;
 
     public int shipSetUp;
     public final int ship1 = 1;
