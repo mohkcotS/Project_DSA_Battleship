@@ -8,9 +8,11 @@ public class UI {
     Font font1,font1a,font1b,font1c,font2;
 
     String [] status;
+    int timer = 0;
 
     public int statusNo=3;
-
+    public String playerStatus = "";
+    public String computerStatus = "";
     Button b1,b2,b3,b4,b5,play;
     public UI(GamePanel gp){
         this.gp = gp;
@@ -60,7 +62,7 @@ public class UI {
     public void drawSetUpBoard(){
 
         //Main Border for 3 Area
-        g2.setColor(new Color(0x003366));
+        g2.setColor(new Color(0x1B4160));
         g2.fillRect(0,0,960,576);
         g2.setColor(new Color(0x000000));
         g2.setStroke(new BasicStroke(5));
@@ -96,7 +98,7 @@ public class UI {
 
         //Status
         g2.setFont(font1a);
-        if(statusNo == 0){
+        if(statusNo == 0 || statusNo == 6){
             g2.setColor(Color.GREEN);
             g2.drawString("VALID",center("VALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
         }
@@ -110,6 +112,10 @@ public class UI {
 
         //Button
         drawButton();
+        //check can play
+        if(gp.player.canPlay()){
+            statusNo = 6;
+        }
     }
 
     public void drawPlayerBoard(){
@@ -214,41 +220,68 @@ public class UI {
     }
 
     public void drawGamePlay(){
-        //Background and area
-        g2.setColor(new Color(0x003366));
+        //Background
+        g2.setColor(new Color(0x1B4160));
         g2.fillRect(0,0,960,576);
+        //Information
+        displayInformationPlayState();
+        //Select2
+        drawSelectionTurn2();
+        //Title
+        g2.setFont(font2);
+        g2.setColor(new Color(0x90EE90));
+        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
+        g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
+        //Player Board
+        drawPlayerBoard();
+        //Computer Board
+        drawComputerBoard();
+        //Border
+        drawPlayStateBorder();
+        //Select1
+        drawSelectionTurn1();
+    }
+
+    public void drawPlayStateBorder(){
+        //Background and area
         g2.setColor(Color.black);
         g2.setStroke(new BasicStroke(5));
         g2.drawRect(2,2,956,572);
 
         g2.drawLine(0,10*gp.tileSize,20*gp.tileSize,10*gp.tileSize);
         g2.drawLine(10*gp.tileSize,0,10*gp.tileSize,12*gp.tileSize);
-
-        //Player Board
-        drawPlayerBoard();
-        //Computer Board
-        drawComputerBoard();
-
-        //Title
-        g2.setFont(font2);
-        g2.setColor(new Color(0x90EE90));
-        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
-        g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
-
+    }
+    public void displayInformationPlayState(){
         //Header
         g2.setColor(Color.WHITE);
         g2.setFont(font1c);
         g2.drawString("Player choose: ", gp.tileSize / 2, gp.tileSize * 43 / 4);
         g2.drawString("Computer choose: ", gp.tileSize * 21 / 2, gp.tileSize * 43 / 4);
+        g2.drawString("Status: ", gp.tileSize * 6, gp.tileSize * 43 / 4);
+        g2.drawString("Status: ", gp.tileSize * 16, gp.tileSize * 43 / 4);
+        g2.drawString("Notification:    ", gp.tileSize /2, gp.tileSize * 23 / 2);
+        g2.drawString("Notification:    ", gp.tileSize * 21/2, gp.tileSize * 23 / 2);
+        if(!gp.mouse.check){
+            timer++;
+            if(timer != 0){
+            g2.drawString("Can not choose this position", gp.tileSize * 3, gp.tileSize * 23 / 2);}
+            if(timer == 100){
+                timer = 0;
+                gp.mouse.check = true;
+            }
+        }
+        g2.drawString(playerStatus, gp.tileSize * 8, gp.tileSize * 43 / 4);
+        g2.drawString(computerStatus, 10+gp.tileSize * 18, gp.tileSize * 43 / 4);
+
+        //Play/Computer's position choose
         g2.setFont(font1b);
-        if(gp.mouse.colP != -1 && gp.mouse.rowP != -1 ) {
-            g2.drawString(""+((char)(gp.mouse.colP + 65)) + gp.mouse.rowP, gp.tileSize*7/2, 2+gp.tileSize * 43 / 4);
+        g2.setColor(new Color(0xFFFF00));
+        if(gp.mouse.colPlayerChoose != -1 && gp.mouse.rowPlayerChoose != -1 ) {
+            g2.drawString(""+((char)(gp.mouse.colPlayerChoose + 65)) + gp.mouse.rowPlayerChoose, gp.tileSize*7/2, 2+gp.tileSize * 43 / 4);
         }
-        if(gp.mouse.colC != -1 && gp.mouse.rowC != -1 ) {
-            g2.drawString(""+((char)(gp.mouse.colC + 65)) + gp.mouse.rowC, gp.tileSize * 14, 2+gp.tileSize * 43 / 4);
+        if(gp.mouse.colComputerChoose != -1 && gp.mouse.rowComputerChoose != -1 ) {
+            g2.drawString(""+((char)(gp.mouse.colComputerChoose + 65)) + gp.mouse.rowComputerChoose, gp.tileSize * 14, 2+gp.tileSize * 43 / 4);
         }
-        //Select
-        drawSelectionTurn();
     }
 
     public void drawComputerBoard(){
@@ -289,24 +322,44 @@ public class UI {
         }
     }
 
-    public void drawSelectionTurn(){
-        if(gp.timer <= 500){
+    public void drawSelectionTurn1(){
+        g2.setColor(new Color(0xFFA500));
+        g2.setStroke(new BasicStroke(5));
+        if(gp.timer == 0){
             gp.b.turn = gp.b.playerTurn;
-            g2.setColor(Color.YELLOW);
-            g2.setStroke(new BasicStroke(5));
-            g2.drawRect(2,gp.tileSize*10,gp.tileSize*10 -2 ,gp.tileSize*2 - 2);
+            g2.drawRect(2,gp.tileSize*10,gp.tileSize*10 -2 ,gp.tileSize*2 -4 );
+            g2.setColor(new Color(0,0,0,200));
+            g2.fillRect(2,2,gp.tileSize*10,gp.tileSize*10 - 4);
+
+            g2.setColor(Color.white);
+            g2.setFont(font2);
+            g2.drawString("Player Turn",center("Player Turn",0,gp.tileSize*10),gp.tileSize*5);
         }
         else {
             gp.b.turn = gp.b.computerTurn;
-            g2.setColor(Color.YELLOW);
-            g2.setStroke(new BasicStroke(5));
-            g2.drawRect(gp.tileSize*10,gp.tileSize*10,gp.tileSize*10 - 2,gp.tileSize*2 - 2);
-            if(gp.timer == 1000){
-                gp.timer = 0;
-            }
+            g2.drawRect(gp.tileSize*10,gp.tileSize*10,gp.tileSize*10 -2 ,gp.tileSize*2 -4 );
+            g2.setColor(new Color(0,0,0,200));
+            g2.fillRect(gp.tileSize*10,2,gp.tileSize*10,gp.tileSize*10 - 4);
+
+            g2.setColor(Color.white);
+            g2.setFont(font2);
+            g2.drawString("Computer Turn",center("Computer Turn",gp.tileSize*10,gp.tileSize*10),gp.tileSize*5);
         }
     }
 
+    public void drawSelectionTurn2(){
+        if(gp.timer == 0){
+            gp.b.turn = gp.b.playerTurn;
+            g2.setColor(new Color(0,0,0,200));
+            g2.fillRect(gp.tileSize*10,2,gp.tileSize*10,gp.tileSize*10 - 4);
+        }
+        else {
+            gp.b.turn = gp.b.computerTurn;
+            g2.setColor(new Color(0,0,0,200));
+            g2.fillRect(2,2,gp.tileSize*10,gp.tileSize*10 - 4);
+
+        }
+    }
     public void setupStatus(){
         status[0] = "Set up successfully";
         status[1] = "Unsuitable size";
@@ -314,6 +367,7 @@ public class UI {
         status[3] = "Ship's position has not been chosen";
         status[4] = "Can not choose this position";
         status[5] = "Incomplete set up ships";
+        status[6] = "All set up are completed";
 
     }
 

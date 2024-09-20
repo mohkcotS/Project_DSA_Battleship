@@ -2,8 +2,8 @@ package Battle;
 import Main.GamePanel;
 
 public class Board {
-    private int [][] boardPlayer;
-    private int [][] boardComputer;
+    private final int [][] boardPlayer;
+    private final int [][] boardComputer;
 
 
     public int turn = 0;
@@ -31,6 +31,9 @@ public class Board {
 
    public int getFromBoardPlayer(int col, int row){
         return boardPlayer[col][row];
+   }
+   public int getFromBoardComputer(int col, int row){
+        return boardComputer[col][row];
    }
 
 
