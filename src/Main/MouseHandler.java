@@ -10,6 +10,7 @@ import java.awt.event.MouseMotionListener;
 public class MouseHandler implements MouseListener, MouseMotionListener {
     GamePanel gp;
     int col,row,col1=-1,row1=-1;
+    int colP=-1,rowP=-1, colC=-1, rowC=-1;
     int index; // shipSetup - 1
     int computerRow, computerCol;
     public MouseHandler(GamePanel gp){
@@ -21,18 +22,15 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        setUpBoardPlayer(e);
-        setUpShip();
-
+        if(gp.gameState == gp.setupState) {
+            setUpBoardPlayer(e);
+            setUpShip();
+        }
+        else if (gp.gameState == gp.playState) {
+            choosePosition(e);
+        }
     }
 
-//        if(e.getX() >= 540 &&e.getX() <= 900 && e.getY() >= 96 && e.getY() <= 456 ){
-//        computerCol = (e.getX() - 540)/36;
-//        computerRow =(e.getY() - 96)/36;
-//        System.out.println("Computer: "+(char)(computerCol+65)+""+computerRow);
-//
-//        }
-//    }
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -55,7 +53,9 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        position(e);
+        if(gp.gameState == gp.setupState){
+            positionInSetupState(e);
+        }
     }
 
     public void setUpBoardPlayer(MouseEvent e){
@@ -63,11 +63,11 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
             col = (e.getX() - 60)/36;
             row =(e.getY() - 96)/36;
         }
-        if(gp.b.getFromBoardPlayer(col,row) == 0 && e.getX() >= 60 &&e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
+        if(gp.b.getFromBoardPlayer(col,row) == 0 && e.getX() >= 60 && e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
             gp.b.setUpBoardPlayer(col,row, -gp.b.shipSetUp);
             gp.player.ship.get(index).addCoordinate(new Coordinate(col,row));
         }
-        else if(gp.b.getFromBoardPlayer(col,row) == -gp.b.shipSetUp){
+        else if(gp.b.getFromBoardPlayer(col,row) == -gp.b.shipSetUp && e.getX() >= 60 && e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
             gp.b.setUpBoardPlayer(col,row, 0);
             gp.player.ship.get(index).removeCoordinate(new Coordinate(col,row));
         }
@@ -82,9 +82,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         }
     }
 
-
-
-    public void position(MouseEvent e){
+    public void positionInSetupState(MouseEvent e){
         if(e.getX() >= 60 &&e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
             col1 = (e.getX() - 60)/36;
             row1 =(e.getY() - 96)/36;
@@ -92,6 +90,18 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         else{
             col1 = -1;
             row1 = -1;
+        }
+    }
+
+    public void choosePosition(MouseEvent e){
+        if (gp.b.turn == gp.b.playerTurn && e.getX() >= 540 &&e.getX() <= 900 && e.getY() >= 96 && e.getY() <= 456 ){
+            colP = (e.getX() - 540)/36;
+            rowP =(e.getY() - 96)/36;
+        }
+
+        if (gp.b.turn == gp.b.computerTurn && e.getX() >= 60 &&e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
+            colC = (e.getX() - 60)/36;
+            rowC =(e.getY() - 96)/36;
         }
     }
 }
