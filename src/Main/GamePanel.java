@@ -34,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame(){
         gameState = setupState;
         b.shipSetUp = b.ship1;
+        ui.ship = player.ship.get(0);
         timer = 0;
     }
 

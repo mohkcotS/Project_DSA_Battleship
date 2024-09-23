@@ -18,18 +18,23 @@ public class ActionHandler implements ActionListener {
     public void setupState(ActionEvent e){
         if(e.getSource() == gp.ui.b1){
             gp.b.shipSetUp = gp.b.ship1;
+            gp.ui.ship = gp.player.ship.get(0);
         }
         else if(e.getSource() == gp.ui.b2){
             gp.b.shipSetUp = gp.b.ship2;
+            gp.ui.ship = gp.player.ship.get(1);
         }
         else if(e.getSource() == gp.ui.b3){
             gp.b.shipSetUp = gp.b.ship3;
+            gp.ui.ship = gp.player.ship.get(2);
         }
         else if(e.getSource() == gp.ui.b4){
             gp.b.shipSetUp = gp.b.ship4;
+            gp.ui.ship = gp.player.ship.get(3);
         }
         else if(e.getSource() == gp.ui.b5){
             gp.b.shipSetUp = gp.b.ship5;
+            gp.ui.ship = gp.player.ship.get(4);
         }
         else if(e.getSource() == gp.ui.play){
             if(gp.player.canPlay()){

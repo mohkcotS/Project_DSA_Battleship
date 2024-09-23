@@ -1,20 +1,26 @@
 package Ship;
 
 import Battle.Coordinate;
+import Main.UtilityTool;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class Ship {
-    String name;
+    public String name;
     String playingStatus = "Alive";
     public int setupStatusNo=3;
-    int size;
+    public int size;
     public ArrayList<Coordinate> cor = new ArrayList<>();
-    int health;
     Color c ;
+    public String color;
+    public BufferedImage img;
 
     public void sort(){
         cor.sort(Comparator.comparing(Coordinate::getX));
@@ -63,5 +69,17 @@ public class Ship {
             return  1;
         }
         return 0;
+    }
+    public BufferedImage setup(String imagePath, int width, int height) {
+        UtilityTool uTool = new UtilityTool();
+        BufferedImage image = null;
+        try {
+            image = ImageIO
+                    .read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(imagePath + ".png")));
+            image = uTool.scaleImage(image, width, height);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 }

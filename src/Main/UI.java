@@ -1,14 +1,17 @@
 package Main;
+import Ship.Ship;
+
 import java.awt.*;
 
 public class UI {
 
     GamePanel gp;
     Graphics2D g2;
-    Font font1,font1a,font1b,font1c,font2;
+    Font font1,font2,font2a,font3,font4,font5;
 
     String [] status;
     int timer = 0;
+    Ship ship;
 
     public int statusNo=3;
     public String playerStatus = "";
@@ -16,25 +19,8 @@ public class UI {
     Button b1,b2,b3,b4,b5,play;
     public UI(GamePanel gp){
         this.gp = gp;
-        font1 = new Font("Times New Roman",Font.BOLD,15);
-        font1a = new Font("Times New Roman",Font.BOLD,20);
-        font1b = new Font("Times New Roman",Font.BOLD,25);
-        font1c = new Font("Times New Roman",Font.PLAIN,20);
-        font2 = new Font("Times New Roman",Font.BOLD,40);
-        b1 = new Button("Ship 1");
-        b2 = new Button("Ship 2");
-        b3 = new Button("Ship 3");
-        b4 = new Button("Ship 4");
-        b5 = new Button("Ship 5");
-        play = new Button("PLAY");
-
-        gp.add(b1);
-        gp.add(b2);
-        gp.add(b3);
-        gp.add(b4);
-        gp.add(b5);
-        gp.add(play);
-
+        addFont();
+        addButton();
         this.status = new String[10];
         setupStatus();
 
@@ -42,19 +28,11 @@ public class UI {
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
-        if(gp.gameState != gp.setupState){
-            gp.remove(b1);
-            gp.remove(b2);
-            gp.remove(b3);
-            gp.remove(b4);
-            gp.remove(b5);
-            gp.remove(play);
-        }
-
         if(gp.gameState == gp.setupState){
             drawSetUpBoard();
         }
         else if(gp.gameState == gp.playState){
+            removeButton();
             drawGamePlay();
         }
     }
@@ -62,11 +40,12 @@ public class UI {
     public void drawSetUpBoard(){
 
         //Main Border for 3 Area
-        g2.setColor(new Color(0x1B4160));
+        g2.setPaint(new GradientPaint(480,0,new Color(0x015C92),480,576,new Color(0x2D82B5) ));
         g2.fillRect(0,0,960,576);
         g2.setColor(new Color(0x000000));
         g2.setStroke(new BasicStroke(5));
         g2.drawRect(2,2,956,572);
+        g2.setStroke(new BasicStroke(3));
         g2.drawLine(0,10*gp.tileSize,20*gp.tileSize,10*gp.tileSize);
 
 
@@ -78,7 +57,12 @@ public class UI {
         int y = gp.tileSize *2;
         int x1 = gp.tileSize * 45/4;
         int y1 = gp.tileSize *27/4;
-        g2.setColor(new Color(0xFFE4E8));
+    //   g2.setColor(new Color(0xFFE4E8));
+       g2.setColor(new Color(0xF3CBD2));
+
+     //   g2.setPaint(new GradientPaint(x+180,y,new Color(0xFFFF30),x+180,y+456,new Color(0xFFD17C)));
+
+
         g2.fillRect(x,y,gp.tileSize*15/2,gp.tileSize*9/2);
         g2.fillRect(x1,y1,gp.tileSize*15/2,gp.tileSize*11/4);
         g2.setColor(new Color(0x000000));
@@ -87,23 +71,25 @@ public class UI {
         g2.drawRoundRect(x1,y1,gp.tileSize*15/2,gp.tileSize*11/4,15,15);
 
         //Title
-        g2.setFont(font2);
+        g2.setFont(font5);
         g2.setColor(new Color(0x90EE90));
         g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
         g2.drawString("Set up Ships",center("Set up Ships",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
-        g2.setFont(font1b);
+        g2.setFont(font3);
         g2.setColor(Color.BLACK);
         g2.drawString("Information",center("Information",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*21/8);
         g2.drawString("Status",center("Status",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*59/8);
+        //Information
+        drawShipInformation();
 
         //Status
-        g2.setFont(font1a);
+        g2.setFont(font2);
         if(statusNo == 0 || statusNo == 6){
-            g2.setColor(Color.GREEN);
+            g2.setColor(new Color(0x02D902));
             g2.drawString("VALID",center("VALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
         }
         else{
-            g2.setColor(Color.RED);
+            g2.setColor(new Color(0xFF0000));
             g2.drawString("INVALID",center("INVALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
         }
         g2.setFont(font1);
@@ -160,7 +146,7 @@ public class UI {
         y = gp.tileSize * 15/8;
         for(int i = 65; i<= 74; i++){
             if(gp.mouse.col1 == i-65){
-                g2.setFont(font1b);
+                g2.setFont(font3);
                 g2.setColor(new Color(0xFFD700));
             }
             else{
@@ -176,7 +162,7 @@ public class UI {
         y = gp.tileSize * 5/2;
         for(int i = 0; i<= 9; i++){
             if(gp.mouse.row1 == i){
-                g2.setFont(font1b);
+                g2.setFont(font3);
                 g2.setColor(new Color(0xFFD700));
             }
             else{
@@ -215,8 +201,22 @@ public class UI {
         x += gp.tileSize * 9/2;
 
         play.addActionListener(gp.action);
-        play.setFont(font1b);
+        play.setFont(font3);
         play.setBounds(x,y,width*2,height);
+    }
+
+    public void drawShipInformation(){
+        g2.setColor(Color.BLACK.brighter());
+        g2.setFont(font3);
+        g2.drawString(ship.name,center(ship.name,gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*7/2);
+        g2.setFont(font2a);
+        g2.drawString("Size",gp.tileSize*15,gp.tileSize*19/4);
+        g2.drawString("Color",gp.tileSize*15,gp.tileSize*21/4);
+        g2.drawString(":  "+ship.size,gp.tileSize*16,gp.tileSize*19/4);
+        g2.drawString(":  "+ship.color,gp.tileSize*16,gp.tileSize*21/4);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawImage(ship.img,gp.tileSize*12,gp.tileSize*4,gp.tileSize*2,gp.tileSize*2,null);
+        g2.drawRoundRect(gp.tileSize*12,gp.tileSize*4,gp.tileSize*2,gp.tileSize*2,10,10);
     }
 
     public void drawGamePlay(){
@@ -228,7 +228,7 @@ public class UI {
         //Select2
         drawSelectionTurn2();
         //Title
-        g2.setFont(font2);
+        g2.setFont(font5);
         g2.setColor(new Color(0x90EE90));
         g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
         g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
@@ -254,7 +254,7 @@ public class UI {
     public void displayInformationPlayState(){
         //Header
         g2.setColor(Color.WHITE);
-        g2.setFont(font1c);
+        g2.setFont(font4);
         g2.drawString("Player choose: ", gp.tileSize / 2, gp.tileSize * 43 / 4);
         g2.drawString("Computer choose: ", gp.tileSize * 21 / 2, gp.tileSize * 43 / 4);
         g2.drawString("Status: ", gp.tileSize * 6, gp.tileSize * 43 / 4);
@@ -274,7 +274,7 @@ public class UI {
         g2.drawString(computerStatus, 10+gp.tileSize * 18, gp.tileSize * 43 / 4);
 
         //Play/Computer's position choose
-        g2.setFont(font1b);
+        g2.setFont(font3);
         g2.setColor(new Color(0xFFFF00));
         if(gp.mouse.colPlayerChoose != -1 && gp.mouse.rowPlayerChoose != -1 ) {
             g2.drawString(""+((char)(gp.mouse.colPlayerChoose + 65)) + gp.mouse.rowPlayerChoose, gp.tileSize*7/2, 2+gp.tileSize * 43 / 4);
@@ -332,7 +332,7 @@ public class UI {
             g2.fillRect(2,2,gp.tileSize*10,gp.tileSize*10 - 4);
 
             g2.setColor(Color.white);
-            g2.setFont(font2);
+            g2.setFont(font5);
             g2.drawString("Player Turn",center("Player Turn",0,gp.tileSize*10),gp.tileSize*5);
         }
         else {
@@ -342,7 +342,7 @@ public class UI {
             g2.fillRect(gp.tileSize*10,2,gp.tileSize*10,gp.tileSize*10 - 4);
 
             g2.setColor(Color.white);
-            g2.setFont(font2);
+            g2.setFont(font5);
             g2.drawString("Computer Turn",center("Computer Turn",gp.tileSize*10,gp.tileSize*10),gp.tileSize*5);
         }
     }
@@ -375,6 +375,36 @@ public class UI {
         int textWidth = (int) g2.getFontMetrics().getStringBounds(s, g2).getWidth();
         return x + (size - textWidth) / 2;
     }
+    public void addFont(){
+        font1 = new Font("Times New Roman",Font.BOLD,15);
+        font2 = new Font("Times New Roman",Font.BOLD,20);
+        font2a = new Font("Times New Roman",Font.PLAIN,20);
+        font3 = new Font("Times New Roman",Font.BOLD,25);
+        font4 = new Font("Times New Roman",Font.PLAIN,20);
+        font5 = new Font("Times New Roman",Font.BOLD,40);
+    }
+    public void addButton(){
+        b1 = new Button("Ship 1");
+        b2 = new Button("Ship 2");
+        b3 = new Button("Ship 3");
+        b4 = new Button("Ship 4");
+        b5 = new Button("Ship 5");
+        play = new Button("PLAY");
 
+        gp.add(b1);
+        gp.add(b2);
+        gp.add(b3);
+        gp.add(b4);
+        gp.add(b5);
+        gp.add(play);
+    }
+    public void removeButton(){
+        gp.remove(b1);
+        gp.remove(b2);
+        gp.remove(b3);
+        gp.remove(b4);
+        gp.remove(b5);
+        gp.remove(play);
+    }
 
 }
