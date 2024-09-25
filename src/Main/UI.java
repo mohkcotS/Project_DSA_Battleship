@@ -1,13 +1,18 @@
 package Main;
 import Ship.Ship;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 public class UI {
 
     GamePanel gp;
     Graphics2D g2;
     Font font1,font2,font2a,font3,font4,font5;
+    BufferedImage hit, miss,ship1Hit,ship2Hit,ship3Hit,ship4Hit,ship5Hit;
 
     String [] status;
     int timer = 0;
@@ -23,7 +28,7 @@ public class UI {
         addButton();
         this.status = new String[10];
         setupStatus();
-
+        setUpImage();
     }
 
     public void draw(Graphics2D g2){
@@ -110,28 +115,8 @@ public class UI {
         int size = gp.tileSize * 3/4;
         for(int i = 0; i<10;i++){
             for(int j = 0; j<10;j++){
-                g2.setColor(new Color(0xFFFFE0));
-                if(gp.b.getFromBoardPlayer(j,i) == -1){
-                    g2.setColor(new Color(0xB4FFB4));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -2){
-                    g2.setColor(new Color(0xA0DBFF));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -3){
-                    g2.setColor(new Color(0xFFC09C));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -4){
-                    g2.setColor(new Color(0xFF7C7C));
-                }
-
-                if(gp.b.getFromBoardPlayer(j,i) == -5){
-                    g2.setColor(new Color(0xFF5BEC));
-                }
-
-                g2.fillRect(x,y,size,size);
+                int num = gp.b.getFromBoardPlayer(j,i);
+                drawChosen(num,x,y);
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
@@ -276,11 +261,12 @@ public class UI {
         //Play/Computer's position choose
         g2.setFont(font3);
         g2.setColor(new Color(0xFFFF00));
+        checkHitOrMiss();
         if(gp.mouse.colPlayerChoose != -1 && gp.mouse.rowPlayerChoose != -1 ) {
             g2.drawString(""+((char)(gp.mouse.colPlayerChoose + 65)) + gp.mouse.rowPlayerChoose, gp.tileSize*7/2, 2+gp.tileSize * 43 / 4);
         }
-        if(gp.mouse.colComputerChoose != -1 && gp.mouse.rowComputerChoose != -1 ) {
-            g2.drawString(""+((char)(gp.mouse.colComputerChoose + 65)) + gp.mouse.rowComputerChoose, gp.tileSize * 14, 2+gp.tileSize * 43 / 4);
+        if(gp.computer.computerChooseX != -1 && gp.computer.computerChooseY != -1){
+            g2.drawString(""+((char)(gp.computer.computerChooseX + 65)) + gp.computer.computerChooseY, gp.tileSize*14, 2+gp.tileSize * 43 / 4);
         }
     }
 
@@ -290,11 +276,8 @@ public class UI {
         int size = gp.tileSize * 3/4;
         for(int i = 0; i<10;i++){
             for(int j = 0; j<10;j++){
-                g2.setColor(new Color(0xFFFFE0));
-                if(gp.b.getFromBoardPlayer(j,i) == 1){
-                    g2.setColor(Color.GREEN);
-                }
-                g2.fillRect(x,y,size,size);
+                int num = gp.b.getFromBoardComputer(j,i);
+                drawChosen(num,x,y);
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
@@ -325,8 +308,7 @@ public class UI {
     public void drawSelectionTurn1(){
         g2.setColor(new Color(0xFFA500));
         g2.setStroke(new BasicStroke(5));
-        if(gp.timer == 0){
-            gp.b.turn = gp.b.playerTurn;
+        if(gp.b.turn == gp.b.playerTurn){
             g2.drawRect(2,gp.tileSize*10,gp.tileSize*10 -2 ,gp.tileSize*2 -4 );
             g2.setColor(new Color(0,0,0,200));
             g2.fillRect(2,2,gp.tileSize*10,gp.tileSize*10 - 4);
@@ -336,7 +318,6 @@ public class UI {
             g2.drawString("Player Turn",center("Player Turn",0,gp.tileSize*10),gp.tileSize*5);
         }
         else {
-            gp.b.turn = gp.b.computerTurn;
             g2.drawRect(gp.tileSize*10,gp.tileSize*10,gp.tileSize*10 -2 ,gp.tileSize*2 -4 );
             g2.setColor(new Color(0,0,0,200));
             g2.fillRect(gp.tileSize*10,2,gp.tileSize*10,gp.tileSize*10 - 4);
@@ -348,14 +329,12 @@ public class UI {
     }
 
     public void drawSelectionTurn2(){
-        if(gp.timer == 0){
-            gp.b.turn = gp.b.playerTurn;
-            g2.setColor(new Color(0,0,0,200));
+        if(gp.b.turn == gp.b.playerTurn){
+            g2.setColor(new Color(0,0,0,180));
             g2.fillRect(gp.tileSize*10,2,gp.tileSize*10,gp.tileSize*10 - 4);
         }
         else {
-            gp.b.turn = gp.b.computerTurn;
-            g2.setColor(new Color(0,0,0,200));
+            g2.setColor(new Color(0,0,0,180));
             g2.fillRect(2,2,gp.tileSize*10,gp.tileSize*10 - 4);
 
         }
@@ -369,6 +348,22 @@ public class UI {
         status[5] = "Incomplete set up ships";
         status[6] = "All set up are completed";
 
+    }
+
+    public void checkHitOrMiss(){
+        if(gp.mouse.colPlayerChoose!= -1 && gp.mouse.rowPlayerChoose != -1 && gp.b.getFromBoardComputer(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose) == 0){
+            gp.ui.playerStatus = "Miss";
+        }
+        else if(gp.mouse.colPlayerChoose!= -1 && gp.mouse.rowPlayerChoose != -1){
+            gp.ui.playerStatus = "Hit";
+        }
+
+        if(gp.computer.computerChooseX != -1 && gp.computer.computerChooseY != -1 && gp.b.getFromBoardPlayer(gp.computer.computerChooseX,gp.computer.computerChooseY) == 6){
+            gp.ui.computerStatus = "Miss";
+        }
+        else if (gp.computer.computerChooseX != -1 && gp.computer.computerChooseY != -1){
+            gp.ui.computerStatus = "Hit";
+        }
     }
 
     public int center(String s, int x ,  int size) {
@@ -405,6 +400,53 @@ public class UI {
         gp.remove(b4);
         gp.remove(b5);
         gp.remove(play);
+    }
+
+    public void drawChosen(int num, int x, int y){
+        if(num <=0 ){
+            switch (num) {
+                case 0 -> g2.setColor(new Color(0xFFFFE0));
+                case -1 -> g2.setColor(new Color(0xB4FFB4));
+                case -2 -> g2.setColor(new Color(0xA0DBFF));
+                case -3 -> g2.setColor(new Color(0xFFC09C));
+                case -4 -> g2.setColor(new Color(0xFF7C7C));
+                case -5 -> g2.setColor(new Color(0xFF5BEC));
+            }
+            g2.fillRect(x,y,36,36);
+        }
+        else{
+            switch (num){
+                case 1 -> g2.drawImage(ship1Hit,x,y,36,36,null);
+                case 2 -> g2.drawImage(ship2Hit,x,y,36,36,null);
+                case 3 -> g2.drawImage(ship3Hit,x,y,36,36,null);
+                case 4 -> g2.drawImage(ship4Hit,x,y,36,36,null);
+                case 5 -> g2.drawImage(ship5Hit,x,y,36,36,null);
+                case 6 -> g2.drawImage(miss,x,y,36,36,null);
+            }
+        }
+    }
+
+    public void  setUpImage(){
+        hit = setup("Choose/Hit",gp.tileSize*3/4,gp.tileSize*3/4);
+        miss = setup("Choose/Miss",gp.tileSize*3/4,gp.tileSize*3/4);
+        ship1Hit = setup("Choose/Ship1_hit",gp.tileSize*3/4,gp.tileSize*3/4);
+        ship2Hit = setup("Choose/Ship2_hit",gp.tileSize*3/4,gp.tileSize*3/4);
+        ship3Hit = setup("Choose/Ship3_hit",gp.tileSize*3/4,gp.tileSize*3/4);
+        ship4Hit = setup("Choose/Ship4_hit",gp.tileSize*3/4,gp.tileSize*3/4);
+        ship5Hit = setup("Choose/Ship5_hit",gp.tileSize*3/4,gp.tileSize*3/4);
+
+    }
+    public BufferedImage setup(String imagePath, int width, int height) {
+        UtilityTool uTool = new UtilityTool();
+        BufferedImage image = null;
+        try {
+            image = ImageIO
+                    .read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(imagePath + ".png")));
+            image = uTool.scaleImage(image, width, height);
+        } catch (IOException e) {
+            System.out.println("No image");
+        }
+        return image;
     }
 
 }

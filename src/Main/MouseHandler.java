@@ -10,7 +10,7 @@ import java.awt.event.MouseMotionListener;
 public class MouseHandler implements MouseListener, MouseMotionListener {
     GamePanel gp;
     int col,row,col1=-1,row1=-1;
-    int colPlayerChoose=-1,rowPlayerChoose=-1, colComputerChoose=-1, rowComputerChoose=-1;
+    int colPlayerChoose=-1,rowPlayerChoose=-1;
     int index; // shipSetup - 1
 
     boolean check = true;
@@ -99,29 +99,10 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         if (gp.b.turn == gp.b.playerTurn && e.getX() >= 540 &&e.getX() <= 900 && e.getY() >= 96 && e.getY() <= 456 ){
             colPlayerChoose = (e.getX() - 540)/36;
             rowPlayerChoose =(e.getY() - 96)/36;
-            if(gp.b.getFromBoardComputer(colPlayerChoose,rowPlayerChoose)< 0){
-                gp.ui.playerStatus = "Hit";
-            }
-            else{
-                gp.ui.playerStatus = "Miss";
-            }
             gp.start= true;
         }
         else if(gp.b.turn == gp.b.playerTurn && e.getX() < 540 ||e.getX() > 900 || e.getY() < 96 || e.getY() > 456 ){
             check = false;
-        }
-
-        if (gp.b.turn == gp.b.computerTurn && e.getX() >= 60 &&e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
-            colComputerChoose = (e.getX() - 60)/36;
-            rowComputerChoose =(e.getY() - 96)/36;
-            if(gp.b.getFromBoardPlayer(colComputerChoose,rowComputerChoose) < 0){
-                gp.ui.computerStatus = "Hit";
-            }
-            else{
-                gp.ui.computerStatus = "Miss";
-            }
-            gp.start = false;
-            gp.timer = 0;
         }
     }
 }

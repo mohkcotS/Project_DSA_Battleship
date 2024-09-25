@@ -36,5 +36,7 @@ public class Board {
         return boardComputer[col][row];
    }
 
-
+   public void setPlayerBoard(int col, int row,int value){
+        boardPlayer[col][row] = value;
+   }
 }
