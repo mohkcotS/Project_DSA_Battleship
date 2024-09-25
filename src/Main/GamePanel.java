@@ -1,6 +1,7 @@
 package Main;
 
 import Battle.Board;
+import Controller.Computer;
 import Controller.Player;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     public Board b = new Board (this);
     public Player player = new Player(this);
+    public Computer computer = new Computer(this);
     public MouseHandler mouse = new MouseHandler(this);
     public ActionHandler action = new ActionHandler(this);
 
@@ -76,8 +78,21 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update(){
-        if (start) {
-            timer++;
+        if(gameState == playState){
+            if(!start){
+                b.turn = b.playerTurn;
+            }
+            else{
+                b.turn = b.computerTurn;
+                computer.shooting();
+                timer++;
+                if(timer == 300){
+                    timer = 0;
+                    start = false;
+                }
+            }
+
+
         }
     }
 
