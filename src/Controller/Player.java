@@ -1,5 +1,6 @@
 package Controller;
 
+import Battle.Coordinate;
 import Main.GamePanel;
 import Ship.*;
 
@@ -15,6 +16,7 @@ public class Player {
     public ShipType5 ship5;
 
     public ArrayList<Ship> ship;
+    public boolean check;
     public Player(GamePanel gp){
         this.gp = gp;
         this.ship = new ArrayList<>();
@@ -40,7 +42,47 @@ public class Player {
             }
         }
         return true;
+    }
 
+    public void shooting(){
+        if(gp.mouse.colPlayerChoose != -1 && gp.mouse.rowPlayerChoose != -1) {
+            int num = gp.b.getFromBoardComputer(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose);
+            switch (num){
+                case   0 -> gp.b.setComputerBoard(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose,6);
+                case  -1 -> {
+                    gp.b.setComputerBoard(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose, 1);
+                    gp.computer.ship.get(0).removeCoordinate(new Coordinate(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose));
+                }
+                case  -2 -> {
+                    gp.b.setComputerBoard(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose, 2);
+                    gp.computer.ship.get(1).removeCoordinate(new Coordinate(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose));
+                }
+                case  -3 -> {
+                    gp.b.setComputerBoard(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose, 3);
+                    gp.computer.ship.get(2).removeCoordinate(new Coordinate(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose));
+                }
+                case  -4 -> {
+                    gp.b.setComputerBoard(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose,4);
+                    gp.computer.ship.get(3).removeCoordinate(new Coordinate(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose));
+                }
+                case  -5 -> {
+                    gp.b.setComputerBoard(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose,5);
+                    gp.computer.ship.get(4).removeCoordinate(new Coordinate(gp.mouse.colPlayerChoose, gp.mouse.rowPlayerChoose));
+                }
+            }
+
+        }
+        gp.computer.checkDestroy();
+    }
+
+    public void checkDestroy(){
+        for(Ship s : ship){
+            if(s.cor.isEmpty() && s.isDestroy == 0){
+                gp.ui.destroyStatus = s.name;
+                s.isDestroy = 1;
+                check = true;
+            }
+        }
     }
 
 }

@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Ship {
     public String name;
-    String playingStatus = "Alive";
+    public int isDestroy = 0;
     public int setupStatusNo=3;
     public int size;
     public ArrayList<Coordinate> cor = new ArrayList<>();
