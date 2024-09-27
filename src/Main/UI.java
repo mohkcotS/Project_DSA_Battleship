@@ -13,6 +13,7 @@ public class UI {
     Graphics2D g2;
     Font font1,font2,font2a,font3,font4,font5;
     BufferedImage hit, miss,ship1Hit,ship2Hit,ship3Hit,ship4Hit,ship5Hit;
+    public String destroyStatus;
 
     String [] status;
     int timer = 0;
@@ -116,7 +117,7 @@ public class UI {
         for(int i = 0; i<10;i++){
             for(int j = 0; j<10;j++){
                 int num = gp.b.getFromBoardPlayer(j,i);
-                drawChosen(num,x,y);
+                drawChosen(num,x,y,0);
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
@@ -215,8 +216,8 @@ public class UI {
         //Title
         g2.setFont(font5);
         g2.setColor(new Color(0x90EE90));
-        g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
-        g2.drawString("Computer",center("computer",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
+        g2.drawString("Player Board",center("Player Board",0,gp.tileSize*10),gp.tileSize);
+        g2.drawString("Computer Board",center("computer Board",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
         //Player Board
         drawPlayerBoard();
         //Computer Board
@@ -255,6 +256,24 @@ public class UI {
                 gp.mouse.check = true;
             }
         }
+        if(gp.computer.check){
+            timer++;
+            if(timer != 0){
+            g2.drawString("Computer's "+destroyStatus+" is destroyed", gp.tileSize * 3, gp.tileSize * 23 / 2);}
+            if(timer == 500){
+                timer = 0;
+                gp.computer.check = false;
+            }
+        }
+        if(gp.player.check){
+            timer++;
+            if(timer != 0){
+            g2.drawString("Player's "+destroyStatus+" is destroyed", gp.tileSize * 13, gp.tileSize * 23 / 2);}
+            if(timer == 500){
+                timer = 0;
+                gp.computer.check = false;
+            }
+        }
         g2.drawString(playerStatus, gp.tileSize * 8, gp.tileSize * 43 / 4);
         g2.drawString(computerStatus, 10+gp.tileSize * 18, gp.tileSize * 43 / 4);
 
@@ -277,7 +296,7 @@ public class UI {
         for(int i = 0; i<10;i++){
             for(int j = 0; j<10;j++){
                 int num = gp.b.getFromBoardComputer(j,i);
-                drawChosen(num,x,y);
+                drawChosen(num,x,y,1);
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
@@ -351,7 +370,7 @@ public class UI {
     }
 
     public void checkHitOrMiss(){
-        if(gp.mouse.colPlayerChoose!= -1 && gp.mouse.rowPlayerChoose != -1 && gp.b.getFromBoardComputer(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose) == 0){
+        if(gp.mouse.colPlayerChoose!= -1 && gp.mouse.rowPlayerChoose != -1 && gp.b.getFromBoardComputer(gp.mouse.colPlayerChoose,gp.mouse.rowPlayerChoose) == 6){
             gp.ui.playerStatus = "Miss";
         }
         else if(gp.mouse.colPlayerChoose!= -1 && gp.mouse.rowPlayerChoose != -1){
@@ -402,26 +421,49 @@ public class UI {
         gp.remove(play);
     }
 
-    public void drawChosen(int num, int x, int y){
-        if(num <=0 ){
-            switch (num) {
-                case 0 -> g2.setColor(new Color(0xFFFFE0));
-                case -1 -> g2.setColor(new Color(0xB4FFB4));
-                case -2 -> g2.setColor(new Color(0xA0DBFF));
-                case -3 -> g2.setColor(new Color(0xFFC09C));
-                case -4 -> g2.setColor(new Color(0xFF7C7C));
-                case -5 -> g2.setColor(new Color(0xFF5BEC));
+    public void drawChosen(int num, int x, int y, int index) {
+        if (index == 1) {
+            if (num == 6) {
+                g2.drawImage(miss, x, y, 36, 36, null);
+            } else {
+                if (num == 1 && gp.computer.ship.get(0).cor.isEmpty()) {
+                    g2.drawImage(ship1Hit, x, y, 36, 36, null);
+                } else if (num == 2 && gp.computer.ship.get(1).cor.isEmpty()) {
+                    g2.drawImage(ship2Hit, x, y, 36, 36, null);
+                } else if (num == 3 && gp.computer.ship.get(2).cor.isEmpty()) {
+                    g2.drawImage(ship3Hit, x, y, 36, 36, null);
+                } else if (num == 4 && gp.computer.ship.get(3).cor.isEmpty()) {
+                    g2.drawImage(ship4Hit, x, y, 36, 36, null);
+                } else if (num == 5 && gp.computer.ship.get(4).cor.isEmpty()) {
+                    g2.drawImage(ship5Hit, x, y, 36, 36, null);
+                } else if (num <= 0) {
+                    g2.setColor(new Color(0xFFFFE0));
+                    g2.fillRect(x, y, 36, 36);
+                } else {
+                    g2.drawImage(hit, x, y, 36, 36, null);
+                }
             }
-            g2.fillRect(x,y,36,36);
         }
-        else{
-            switch (num){
-                case 1 -> g2.drawImage(ship1Hit,x,y,36,36,null);
-                case 2 -> g2.drawImage(ship2Hit,x,y,36,36,null);
-                case 3 -> g2.drawImage(ship3Hit,x,y,36,36,null);
-                case 4 -> g2.drawImage(ship4Hit,x,y,36,36,null);
-                case 5 -> g2.drawImage(ship5Hit,x,y,36,36,null);
-                case 6 -> g2.drawImage(miss,x,y,36,36,null);
+        else {
+            if (num <= 0) {
+                switch (num) {
+                    case 0 -> g2.setColor(new Color(0xFFFFE0));
+                    case -1 -> g2.setColor(new Color(0xB4FFB4));
+                    case -2 -> g2.setColor(new Color(0xA0DBFF));
+                    case -3 -> g2.setColor(new Color(0xFFC09C));
+                    case -4 -> g2.setColor(new Color(0xFF7C7C));
+                    case -5 -> g2.setColor(new Color(0xFF5BEC));
+                }
+                g2.fillRect(x, y, 36, 36);
+            } else {
+                switch (num) {
+                    case 1 -> g2.drawImage(ship1Hit, x, y, 36, 36, null);
+                    case 2 -> g2.drawImage(ship2Hit, x, y, 36, 36, null);
+                    case 3 -> g2.drawImage(ship3Hit, x, y, 36, 36, null);
+                    case 4 -> g2.drawImage(ship4Hit, x, y, 36, 36, null);
+                    case 5 -> g2.drawImage(ship5Hit, x, y, 36, 36, null);
+                    case 6 -> g2.drawImage(miss, x, y, 36, 36, null);
+                }
             }
         }
     }

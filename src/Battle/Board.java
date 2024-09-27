@@ -39,4 +39,24 @@ public class Board {
    public void setPlayerBoard(int col, int row,int value){
         boardPlayer[col][row] = value;
    }
+   public void setComputerBoard(int col, int row,int value){
+        boardComputer[col][row] = value;
+   }
+
+   public void print(){
+       System.out.println("Player");
+        for(int i = 0; i<10; i++){
+            for(int j = 0; j< 10; j++){
+                System.out.print(boardPlayer[j][i] +"       ");
+            }
+            System.out.println();
+        }
+        System.out.println("Computer");
+        for(int i = 0; i<10; i++){
+            for(int j = 0; j< 10; j++){
+                System.out.print(boardComputer[j][i] +"     ");
+            }
+            System.out.println();
+        }
+   }
 }

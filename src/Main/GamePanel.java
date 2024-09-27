@@ -38,6 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
         b.shipSetUp = b.ship1;
         ui.ship = player.ship.get(0);
         timer = 0;
+        b.print();
     }
 
 
@@ -79,15 +80,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update(){
         if(gameState == playState){
-            if(!start){
+            if(!start && timer == 0){
                 b.turn = b.playerTurn;
             }
             else{
                 b.turn = b.computerTurn;
                 computer.shooting();
                 timer++;
-                if(timer == 300){
-                    timer = 0;
+                if(timer == 200){
+                    timer = -20;
                     start = false;
                 }
             }
