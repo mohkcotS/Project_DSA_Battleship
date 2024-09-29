@@ -65,6 +65,9 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
             col = (e.getX() - 60)/36;
             row =(e.getY() - 96)/36;
         }
+        else{
+            check = false;
+        }
         if(gp.b.getFromBoardPlayer(col,row) == 0 && e.getX() >= 60 && e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
             gp.b.setUpBoardPlayer(col,row, -gp.b.shipSetUp);
             gp.player.ship.get(index).addCoordinate(new Coordinate(col,row));
@@ -102,7 +105,6 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
             if(gp.b.getFromBoardComputer(colPlayerChoose,rowPlayerChoose) <= 0) {
                 gp.player.shooting();
                 gp.start = true;
-                gp.b.print();
             }
             else{
                 check = false;
