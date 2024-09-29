@@ -22,7 +22,6 @@ public class GamePanel extends JPanel implements Runnable {
     public Computer computer = new Computer(this);
     public MouseHandler mouse = new MouseHandler(this);
     public ActionHandler action = new ActionHandler(this);
-
     public int timer;
     public boolean start = false;
 

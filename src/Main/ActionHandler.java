@@ -53,9 +53,8 @@ public class ActionHandler implements ActionListener {
                 gp.ui.statusNo = 5;
             }
         }
-
     }
-    public void setUpShip(){
+    public void setUpShip() {
         gp.player.ship.get(index).sort();
         gp.player.ship.get(index).setupStatusNo = gp.player.ship.get(index).checkValid();
         gp.ui.statusNo = gp.player.ship.get(index).setupStatusNo;
