@@ -10,9 +10,22 @@ public class ActionHandler implements ActionListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(gp.gameState == gp.setupState){
+        if(gp.gameState == gp.openingState){
+            openingState(e);
+        }
+        else if(gp.gameState == gp.setupState){
             setupState(e);
         }
+    }
+
+    public void openingState(ActionEvent e){
+        if(e.getSource() == gp.ui.exit){
+            System.exit(0);
+        }
+        else if(e.getSource() == gp.ui.newGame){
+            gp.gameState = gp.setupState;
+        }
+
     }
 
     public void setupState(ActionEvent e){

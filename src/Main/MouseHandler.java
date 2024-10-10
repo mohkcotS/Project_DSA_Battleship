@@ -25,8 +25,10 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
     @Override
     public void mousePressed(MouseEvent e) {
         if(gp.gameState == gp.setupState) {
-            setUpBoardPlayer(e);
-            setUpShip();
+            if(e.getX() > 60 &&e.getX() < 420 && e.getY() > 96 && e.getY() < 456 ) {
+                setUpBoardPlayer(e);
+                setUpShip();
+            }
         }
         else if (gp.gameState == gp.playState) {
             choosePosition(e);
@@ -64,9 +66,6 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         if(e.getX() >= 60 &&e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
             col = (e.getX() - 60)/36;
             row =(e.getY() - 96)/36;
-        }
-        else{
-            check = false;
         }
         if(gp.b.getFromBoardPlayer(col,row) == 0 && e.getX() >= 60 && e.getX() <= 420 && e.getY() >= 96 && e.getY() <= 456 ){
             gp.b.setUpBoardPlayer(col,row, -gp.b.shipSetUp);

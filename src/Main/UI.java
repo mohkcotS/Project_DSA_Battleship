@@ -2,6 +2,8 @@ package Main;
 import Ship.Ship;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -12,37 +14,75 @@ public class UI {
 
     GamePanel gp;
     Graphics2D g2;
-    Font font1,font2,font2a,font3,font4,font5;
-    BufferedImage hit,miss,bg;
+    Font font1,font2,font2a,font3,font4,font5,font6;
+    BufferedImage hit,miss,bg,open;
     public String destroyStatus;
 
-    ArrayList<Button> button = new ArrayList<>();
+    ArrayList<Button> buttonSetUpState = new ArrayList<>();
+    ArrayList<Button> buttonOpeningState = new ArrayList<>();
 
     String [] status;
     int timer = 0;
     Ship ship;
-
     public int statusNo=3;
     public String playerStatus = "";
     public String computerStatus = "";
-    Button b1,b2,b3,b4,b5,play;
+    Button b1,b2,b3,b4,b5,play,newGame,instruction,exit;
+
+    int isAdd = 0;
+
     public UI(GamePanel gp){
         this.gp = gp;
         addFont();
-        addButton();
         this.status = new String[10];
         setupStatus();
         setUpImage();
+        addButtonOpeningState();
     }
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
-        if(gp.gameState == gp.setupState){
+        if(gp.gameState == gp.openingState){
+            drawOpeningState();
+        }
+        else if(gp.gameState == gp.setupState){
+            removeButtonOpeningState();
+            if(isAdd == 0){
+                addButtonSetUpState();
+            }
             drawSetUpBoard();
         }
         else if(gp.gameState == gp.playState){
-            removeButton();
+            removeButtonSetUpState();
             drawGamePlay();
+        }
+    }
+
+    public void drawOpeningState(){
+
+        g2.drawImage(open,0,0,gp.screenWidth,gp.screenHeight,null);
+        g2.setColor(new Color(0,0,0,50));
+        g2.fillRect(0,0,gp.screenWidth,gp.screenHeight);
+
+        g2.setColor(new Color(0xFFFFFF));
+        g2.setFont(font6);
+        g2.drawString("Battle Ship",center("Battle Ship",0,gp.tileSize*20),gp.tileSize*2);
+        drawButtonOpeningState();
+    }
+
+    public void drawButtonOpeningState(){
+        int x = gp.tileSize*15/2;
+        int y = gp.tileSize*7/2;
+        Border b = BorderFactory.createLineBorder(new Color(0x07103A),5);
+        for(int i =0 ;i <3;i++){
+            buttonOpeningState.get(i).setBackground(new Color(0xFFD154));
+            buttonOpeningState.get(i).setForeground(new Color(0x002795));
+            buttonOpeningState.get(i).addActionListener(gp.action);
+            buttonOpeningState.get(i).setBorderPainted(true);
+            buttonOpeningState.get(i).setBorder(b);
+            buttonOpeningState.get(i).setBounds(x,y,gp.tileSize*5,gp.tileSize*3/2);
+            buttonOpeningState.get(i).setFont(font3);
+            y += gp.tileSize*5/2;
         }
     }
 
@@ -50,12 +90,12 @@ public class UI {
 
         //Main Border for 3 Area
         g2.drawImage(bg,0,0,gp.screenWidth,gp.screenHeight,null);
+        g2.setColor(new Color(0,0,0,75));
+        g2.fillRect(0,0,gp.screenWidth,gp.tileSize*10);
+
         g2.setColor(new Color(0,0,0,180));
         g2.fillRect(0,gp.tileSize*10,gp.tileSize*20,gp.tileSize*2);
         g2.setColor(Color.WHITE);
-//        g2.setStroke(new BasicStroke(5));
-//        g2.drawLine(0,10*gp.tileSize,20*gp.tileSize,10*gp.tileSize);
-
 
         // Player Board
         drawPlayerBoard();
@@ -75,7 +115,7 @@ public class UI {
 
         //Title
         g2.setFont(font5);
-        g2.setColor(Color.WHITE);
+        g2.setColor(new Color(0xFFFFFF));
         g2.drawString("Player",center("Player",0,gp.tileSize*10),gp.tileSize);
         g2.drawString("Set up Ships",center("Set up Ships",gp.tileSize*10,gp.tileSize*10),gp.tileSize);
         g2.setFont(font3);
@@ -88,11 +128,11 @@ public class UI {
         //Status
         g2.setFont(font2);
         if(statusNo == 0 || statusNo == 6){
-            g2.setColor(new Color(0x02D902));
+            g2.setColor(new Color(0x39FF14));
             g2.drawString("VALID",center("VALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
         }
         else{
-            g2.setColor(new Color(0xFF0000));
+            g2.setColor(new Color(0xFF073A));
             g2.drawString("INVALID",center("INVALID",gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*8);
         }
         g2.setFont(font1);
@@ -100,7 +140,7 @@ public class UI {
         g2.drawString(status[statusNo],center(status[statusNo],gp.tileSize*45/4,gp.tileSize*15/2),gp.tileSize*69/8);
 
         //Button
-        drawButton();
+        drawButtonSetUpState();
         //check can play
         if(gp.player.canPlay()){
             statusNo = 6;
@@ -115,7 +155,7 @@ public class UI {
             for(int j = 0; j<10;j++){
                 int num = gp.b.getFromBoardPlayer(j,i);
                 drawChosen(num,x,y,0);
-                g2.setColor(Color.black);
+                g2.setColor(new Color(0xFFFFFF));
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
 
@@ -157,16 +197,16 @@ public class UI {
         }
     }
 
-    public void drawButton(){
-        isChooseButton();
+    public void drawButtonSetUpState(){
+        isChoose();
         int x = gp.tileSize;
         int y = gp.tileSize*21/2;
         int width = gp.tileSize * 2;
         int height = gp.tileSize;
 
         for(int i = 0; i<5;i++){
-            button.get(i).addActionListener(gp.action);
-            button.get(i).setBounds(x,y,width,height);
+            buttonSetUpState.get(i).addActionListener(gp.action);
+            buttonSetUpState.get(i).setBounds(x,y,width,height);
             x += gp.tileSize * 5/2;
         }
 
@@ -174,6 +214,8 @@ public class UI {
         play.addActionListener(gp.action);
         play.setFont(font3);
         play.setBounds(x,y,width*2,height);
+
+
     }
 
     public void drawShipInformation(){
@@ -193,6 +235,8 @@ public class UI {
     public void drawGamePlay(){
         //Background
         g2.drawImage(bg,0,0,gp.screenWidth,gp.screenHeight,null);
+        g2.setColor(new Color(0,0,0,75));
+        g2.fillRect(0,0,gp.screenWidth,gp.tileSize*10);
         g2.setColor(new Color(0,0,0,180));
         g2.fillRect(0,gp.tileSize*10,gp.tileSize*20,gp.tileSize*2);
         //Information
@@ -238,7 +282,7 @@ public class UI {
                 gp.mouse.check = true;
             }
         }
-        g2.setColor(new Color(0xFFFF00));
+        g2.setColor(new Color(0x32FF00));
         if(gp.computer.check){
             timer++;
             if(timer != 0){
@@ -257,7 +301,7 @@ public class UI {
                 gp.player.check = false;
             }
         }
-        g2.setColor(new Color(0xFF7817));
+        g2.setColor(new Color(0x00FFCC));
         g2.drawString(playerStatus, gp.tileSize * 8, gp.tileSize * 43 / 4);
         g2.drawString(computerStatus, 10+gp.tileSize * 18, gp.tileSize * 43 / 4);
 
@@ -281,7 +325,7 @@ public class UI {
             for(int j = 0; j<10;j++){
                 int num = gp.b.getFromBoardComputer(j,i);
                 drawChosen(num,x,y,1);
-                g2.setColor(Color.black);
+                g2.setColor(Color.white);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(x,y,size,size);
                 x+= size;
@@ -369,8 +413,31 @@ public class UI {
         font3 = new Font("Times New Roman",Font.BOLD,25);
         font4 = new Font("Times New Roman",Font.PLAIN,20);
         font5 = new Font("Times New Roman",Font.BOLD,40);
+        font6 = new Font("Times New Roman",Font.BOLD,80);
     }
-    public void addButton(){
+    public void addButtonOpeningState(){
+        newGame = new Button("New Game");
+        instruction = new Button("Instruction");
+        exit = new Button("Exit");
+
+        gp.add(newGame);
+        gp.add(instruction);
+        gp.add(exit);
+
+        buttonOpeningState.add(newGame);
+        buttonOpeningState.add(instruction);
+        buttonOpeningState.add(exit);
+
+    }
+
+    public void removeButtonOpeningState(){
+        gp.remove(newGame);
+        gp.remove(instruction);
+        gp.remove(exit);
+
+        buttonOpeningState.clear();
+    }
+    public void addButtonSetUpState(){
         b1 = new Button("Ship 1");
         b2 = new Button("Ship 2");
         b3 = new Button("Ship 3");
@@ -385,14 +452,18 @@ public class UI {
         gp.add(b5);
         gp.add(play);
 
-        button.add(b1);
-        button.add(b2);
-        button.add(b3);
-        button.add(b4);
-        button.add(b5);
-        button.add(play);
+        buttonSetUpState.add(b1);
+        buttonSetUpState.add(b2);
+        buttonSetUpState.add(b3);
+        buttonSetUpState.add(b4);
+        buttonSetUpState.add(b5);
+        buttonSetUpState.add(play);
+
+        isAdd = 1;
+
+
     }
-    public void removeButton(){
+    public void removeButtonSetUpState(){
         gp.remove(b1);
         gp.remove(b2);
         gp.remove(b3);
@@ -400,7 +471,8 @@ public class UI {
         gp.remove(b5);
         gp.remove(play);
 
-        button.clear();
+        buttonSetUpState.clear();
+        isAdd = 0;
     }
 
     public void drawChosen(int num, int x, int y, int index) {
@@ -432,41 +504,41 @@ public class UI {
             }
             else if(num == 1 || num == -1) {
                 if(gp.player.ship.get(0).cor.isEmpty()){
-                    g2.setColor(new Color(0,0,0,150));
+                    g2.setColor(new Color(0,0,0,180));
                 }
                 else {
-                    g2.setColor(new Color(0xB4FFB4));
+                    g2.setColor(gp.player.ship.get(0).c);
                 }
             }
             else if(num == 2 || num == -2) {
                 if(gp.player.ship.get(1).cor.isEmpty()){
-                    g2.setColor(new Color(0,0,0,150));
+                    g2.setColor(new Color(0,0,0,180));
                 }
                 else {
-                    g2.setColor(new Color(0xA0DBFF));
+                    g2.setColor(gp.player.ship.get(1).c);
                 }
             }
             else if(num == 3 || num == -3) {
                 if(gp.player.ship.get(2).cor.isEmpty()){
-                    g2.setColor(new Color(0,0,0,150));
+                    g2.setColor(new Color(0,0,0,180));
                 }
                 else {
-                    g2.setColor(new Color(0xFFC09C));
+                    g2.setColor(gp.player.ship.get(2).c);
                 }
             }
             else if(num == 4 || num == -4) {
                 if(gp.player.ship.get(3).cor.isEmpty()){
-                    g2.setColor(new Color(0,0,0,150));
+                    g2.setColor(new Color(0,0,0,180));
                 }
                 else {
-                    g2.setColor(new Color(0xFF7C7C));
+                    g2.setColor(gp.player.ship.get(3).c);
                 }
             }
             else if(num == 5 || num == -5) {
                 if (gp.player.ship.get(4).cor.isEmpty()) {
-                    g2.setColor(new Color(0, 0, 0, 150));
+                    g2.setColor(new Color(0, 0, 0, 180));
                 } else {
-                    g2.setColor(new Color(0xFF5BEC));
+                    g2.setColor(gp.player.ship.get(4).c);
                 }
             }
             g2.fillRect(x, y, 36, 36);
@@ -480,18 +552,19 @@ public class UI {
         }
     }
 
+    public void isChoose(){
+        for(int i = 0; i<5;i++){
+            buttonSetUpState.get(i).setBackGround(i == gp.b.shipSetUp - 1);
+        }
+    }
 
     public void  setUpImage(){
         hit = setup("Choose/Hit",gp.tileSize*3/4,gp.tileSize*3/4);
         miss = setup("Choose/Miss",gp.tileSize*3/4,gp.tileSize*3/4);
-        bg = setup("Background/bg",gp.screenWidth,gp.screenHeight);
+        bg = setup("Background/bg1",gp.screenWidth,gp.screenHeight);
+        open = setup("Background/bg2",gp.screenWidth,gp.screenHeight);
     }
 
-    public void isChooseButton(){
-        for(int i = 0; i<6;i++){
-            button.get(i).setBackGround(i == gp.b.shipSetUp - 1);
-        }
-    }
     public void drawDestroyedShip(int x, int y){
         g2.setColor(new Color(0,0,0,150));
         g2.fillRect(x, y, 36, 36);

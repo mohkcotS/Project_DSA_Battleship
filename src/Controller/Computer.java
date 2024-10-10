@@ -7,6 +7,8 @@ import Ship.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+
+
 public class Computer {
     GamePanel gp;
     public ShipType1 ship1;
@@ -18,7 +20,7 @@ public class Computer {
     public ArrayList<Ship> ship;
     public boolean check = false;
     int numHit=-1;
-    int turn =0;
+    ArrayList<Coordinate> listHit = new ArrayList<>();
     public int computerChooseX = -1;
     public int computerChooseY = -1;
     public Computer(GamePanel gp){
@@ -39,94 +41,94 @@ public class Computer {
         ship.add(ship4);
         ship.add(ship5);
     }
-
     public void choosePosition(){
-        //0.up 1.down 2.right 3.left
         Random rd = new Random();
-        int num = rd.nextInt(99);
-        int num1 = numHit;
+        int num = rd.nextInt(100);
         boolean checkChooseSuccess = false;
+        boolean check;
+        int up=0,down =0,right=0,left=0;
         while (!checkChooseSuccess){
-            if(num1 != -1 && turn <= 3){
-                int direction = -1;
-                int checkCanChoose = -1;
-                while (checkCanChoose != 1){
-                    direction = rd.nextInt(4);
-
-                    if(num1 == 0 && direction == 3){
-                        checkCanChoose = 0;
-                    }
-                    else if(num1 == 99 && direction == 2){
-                        checkCanChoose = 0;
-                    }
-                    else if(num1 <= 9 && direction == 0){
-                        checkCanChoose = 0;
-                    }
-                    else if(num1 >= 90 && direction == 1){
-                        checkCanChoose = 0;
-                    }
-                    else if(num % 10 == 0 && direction == 3){
-                        checkCanChoose = 0;
-                    }
-
-                    else if(num % 10 == 9 && direction == 2){
-                        checkCanChoose = 0;
+            if(numHit != -1){
+                check = true;
+                int num1 = numHit;
+                if(up == 0){
+                    if(num1 >9){
+                        num1 -= 10;
                     }
                     else{
-                        checkCanChoose = 1;
+                        check = false;
                     }
+                    up = 1;
                 }
-                if(direction == 0){
-                    num1 -= 10;
-                }
-                if(direction == 1){
-                    num1 += 10;
-                }
-                if(direction == 2){
-                    num1 += 1;
-                }
-                if(direction == 3){
-                    num1 -= 1;
-                }
-
-                int a = num1 % 10;
-                int b = num1 / 10;
-
-                if(gp.b.getFromBoardPlayer(a,b) <= 0){
-                    computerChooseX = a;
-                    computerChooseY = b;
-                    checkChooseSuccess = true;
-                    if(gp.b.getFromBoardPlayer(a,b) < 0){
-                        numHit = num1;
-                        turn = 0;
+                else if(down == 0){
+                    if(num1 < 90){
+                        num1 += 10;
                     }
-                    else {
-                        turn++;
+                    else{
+                        check = false;
                     }
+                    down = 1;
                 }
-                if(turn == 3){
-                    turn = 0;
+                else if(right == 0){
+                    if(num1 % 10 != 9){
+                        num1 += 1;
+                    }
+                    else{
+                        check = false;
+                    }
+                    right = 1;
+                }
+                else if(left == 0){
+                    if(num1 % 10 != 0){
+                        num1 -= 1;
+                    }
+                    else{
+                        check = false;
+                    }
+                    left = 1;
+                }
+                else{
                     numHit = -1;
                 }
-                System.out.println("1 "+num1);
+
+                if(check){
+                    int x = num1 % 10;
+                    int y = num1 / 10;
+                    if (checkCanChoosePosition(x, y)) {
+                        if (gp.b.getFromBoardPlayer(x, y) < 0) {
+                            numHit = num1;
+                            listHit.add(new Coordinate(x,y));
+
+                        }
+                        computerChooseX = x;
+                        computerChooseY = y;
+                        checkChooseSuccess = true;
+                    }
+                }
             }
-            else {
+            else{
                 num %= 100;
                 int x = num % 10;
                 int y = num / 10;
-                if (gp.b.getFromBoardPlayer(x, y) <= 0) {
+                if (checkCanChoosePosition(x, y)) {
+                    if (gp.b.getFromBoardPlayer(x, y) < 0) {
+                        numHit = num;
+                        listHit.add(new Coordinate(x,y));
+
+                    }
                     computerChooseX = x;
                     computerChooseY = y;
                     checkChooseSuccess = true;
-                    if (gp.b.getFromBoardPlayer(x, y) < 0) {
-                        numHit = num;
-                    }
                 } else {
                     num++;
                 }
-                System.out.println("2  " + num);
             }
         }
+    }
+
+
+    public boolean checkCanChoosePosition(int x , int y){
+        return gp.b.getFromBoardPlayer(x,y) <= 0;
     }
 
     public void shooting(){
