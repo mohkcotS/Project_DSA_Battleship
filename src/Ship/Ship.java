@@ -18,7 +18,7 @@ public class Ship {
     public int setupStatusNo=3;
     public int size;
     public ArrayList<Coordinate> cor = new ArrayList<>();
-    Color c ;
+    public Color c ;
     public String color;
     public BufferedImage img;
 
