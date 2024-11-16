@@ -81,6 +81,7 @@ public class Player {
                 gp.ui.destroyStatus = s.name;
                 s.isDestroy = 1;
                 check = true;
+                gp.computer.listHit.clear();
             }
         }
     }

@@ -19,7 +19,6 @@ public class Computer {
 
     public ArrayList<Ship> ship;
     public boolean check = false;
-    int numHit=-1;
     ArrayList<Coordinate> listHit = new ArrayList<>();
     public int computerChooseX = -1;
     public int computerChooseY = -1;
@@ -48,9 +47,48 @@ public class Computer {
         boolean check;
         int up=0,down =0,right=0,left=0;
         while (!checkChooseSuccess){
-            if(numHit != -1){
+            if(listHit.size() > 1){
+                boolean x = listHit.get(0).getX() == listHit.get(1).getX();
+                int chooseX;
+                int chooseY;
+                int start = 0;
+                if (x){
+                    chooseX = listHit.get(0).getX();
+                    chooseY = 0;
+                    if(listHit.get(0).getY()-interval() >=0){
+                        start = listHit.get(0).getY()-interval();
+                    }
+                    for (int i = start; i <= 9 ;i++){
+                        chooseY = i;
+                        if(checkCanChoosePosition(chooseX,chooseY)){
+                            break;
+                        }
+                    }
+                }
+                else {
+                    chooseX = 0;
+                    chooseY = listHit.get(0).getY();
+                    if(listHit.get(0).getX()-interval() >= 0){
+                        start = listHit.get(0).getX()-interval();
+                    }
+                    for (int i = start; i <= 9 ;i++){
+                        chooseX = i;
+                        if(checkCanChoosePosition(chooseX,chooseY)){
+                            break;
+                        }
+                    }
+                }
+
+                if (gp.b.getFromBoardPlayer(chooseX, chooseY) < 0) {
+                    listHit.add(new Coordinate(chooseX,chooseY));
+                }
+                computerChooseX = chooseX;
+                computerChooseY = chooseY;
+                checkChooseSuccess = true;
+            }
+            else if(listHit.size() == 1){
                 check = true;
-                int num1 = numHit;
+                int num1 = listHit.get(0).getX() + listHit.get(0).getY()*10;
                 if(up == 0){
                     if(num1 >9){
                         num1 -= 10;
@@ -87,16 +125,11 @@ public class Computer {
                     }
                     left = 1;
                 }
-                else{
-                    numHit = -1;
-                }
-
                 if(check){
                     int x = num1 % 10;
                     int y = num1 / 10;
                     if (checkCanChoosePosition(x, y)) {
                         if (gp.b.getFromBoardPlayer(x, y) < 0) {
-                            numHit = num1;
                             listHit.add(new Coordinate(x,y));
 
                         }
@@ -112,9 +145,7 @@ public class Computer {
                 int y = num / 10;
                 if (checkCanChoosePosition(x, y)) {
                     if (gp.b.getFromBoardPlayer(x, y) < 0) {
-                        numHit = num;
                         listHit.add(new Coordinate(x,y));
-
                     }
                     computerChooseX = x;
                     computerChooseY = y;
@@ -124,9 +155,11 @@ public class Computer {
                 }
             }
         }
+        for(Coordinate i : listHit){
+            System.out.print(i.getX() + " " + i.getY() + " ");
+        }
+        System.out.println();
     }
-
-
     public boolean checkCanChoosePosition(int x , int y){
         return gp.b.getFromBoardPlayer(x,y) <= 0;
     }
@@ -230,11 +263,23 @@ public class Computer {
             }
         }
     }
-
-
     public int random(int x){
         Random rd = new Random();
         return rd.nextInt(10-x);
     }
 
+    public int interval () {
+        if (gp.player.ship.get(4).isDestroy != 1){
+            return 5;
+        }if (gp.player.ship.get(3).isDestroy != 1){
+            return 4;
+        }if (gp.player.ship.get(2).isDestroy != 1){
+            return 3;
+        }if (gp.player.ship.get(1).isDestroy != 1){
+            return 2;
+        }if (gp.player.ship.get(0).isDestroy != 1){
+            return 1;
+        }
+        return 0;
+    }
 }
