@@ -31,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int openingState = 1;
     public final int setupState = 2;
     public final int playState = 3;
+    public final int finishState = 4;
 
     public void setupGame(){
         gameState = openingState;

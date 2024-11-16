@@ -20,6 +20,7 @@ public class UI {
 
     ArrayList<Button> buttonSetUpState = new ArrayList<>();
     ArrayList<Button> buttonOpeningState = new ArrayList<>();
+    ArrayList<Button> buttonFinishState = new ArrayList<>();
 
     String [] status;
     int timer = 0;
@@ -27,9 +28,13 @@ public class UI {
     public int statusNo=3;
     public String playerStatus = "";
     public String computerStatus = "";
-    Button b1,b2,b3,b4,b5,play,newGame,instruction,exit;
+    Button b1,b2,b3,b4,b5,play,newGame,instruction,exit,back,newGame1,exit1;
 
-    int isAdd = 0;
+    int isAddOpeningStateButton = 0;
+    int isAddSetUpStateButton = 0;
+    int isAddFinishStateButton = 0;
+
+    public int finish = 0;
 
     public UI(GamePanel gp){
         this.gp = gp;
@@ -37,17 +42,26 @@ public class UI {
         this.status = new String[10];
         setupStatus();
         setUpImage();
-        addButtonOpeningState();
     }
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
         if(gp.gameState == gp.openingState){
+            if(isAddFinishStateButton == 1){
+                removeButtonFinishState();
+            }
+            if(isAddSetUpStateButton == 1){
+                removeButtonSetUpState();
+            }
+            if(isAddOpeningStateButton == 0) {
+                addButtonOpeningState();
+            }
             drawOpeningState();
         }
         else if(gp.gameState == gp.setupState){
             removeButtonOpeningState();
-            if(isAdd == 0){
+
+            if(isAddSetUpStateButton == 0){
                 addButtonSetUpState();
             }
             drawSetUpBoard();
@@ -55,6 +69,12 @@ public class UI {
         else if(gp.gameState == gp.playState){
             removeButtonSetUpState();
             drawGamePlay();
+        }
+        else if(gp.gameState == gp.finishState){
+            if(isAddFinishStateButton == 0){
+                addButtonFinishState();
+            }
+            drawFinishState();
         }
     }
 
@@ -71,19 +91,7 @@ public class UI {
     }
 
     public void drawButtonOpeningState(){
-        int x = gp.tileSize*15/2;
-        int y = gp.tileSize*7/2;
-        Border b = BorderFactory.createLineBorder(new Color(0x07103A),5);
-        for(int i =0 ;i <3;i++){
-            buttonOpeningState.get(i).setBackground(new Color(0xFFD154));
-            buttonOpeningState.get(i).setForeground(new Color(0x002795));
-            buttonOpeningState.get(i).addActionListener(gp.action);
-            buttonOpeningState.get(i).setBorderPainted(true);
-            buttonOpeningState.get(i).setBorder(b);
-            buttonOpeningState.get(i).setBounds(x,y,gp.tileSize*5,gp.tileSize*3/2);
-            buttonOpeningState.get(i).setFont(font3);
-            y += gp.tileSize*5/2;
-        }
+        drawButton(gp.tileSize*15/2,gp.tileSize*7/2,new Color(0x202020),new Color(0xFFD154),new Color(0x002795),buttonOpeningState,3);
     }
 
     public void drawSetUpBoard(){
@@ -215,7 +223,11 @@ public class UI {
         play.setFont(font3);
         play.setBounds(x,y,width*2,height);
 
-
+        x = gp.tileSize/2;
+        y = gp.tileSize/2;
+        back.addActionListener(gp.action);
+        back.setFont(font2);
+        back.setBounds(x,y,width,height/2);
     }
 
     public void drawShipInformation(){
@@ -375,6 +387,27 @@ public class UI {
         }
     }
 
+    public void drawFinishState(){
+        drawGamePlay();
+        g2.setColor(new Color(0,0,0,230));
+        g2.fillRect(0,0,gp.screenWidth,gp.screenHeight);
+        String text;
+        if(finish == 0){
+            text = "PLAYER WIN";
+        }
+        else {
+            text = "COMPUTER WIN";
+        }
+        g2.setColor(new Color(0x98FF98));
+        g2.setFont(font6);
+        g2.drawString(text,center(text,0,gp.screenWidth),gp.tileSize*5/2);
+        drawButtonFinishState();
+    }
+    
+    public void drawButtonFinishState(){
+        drawButton(gp.tileSize*15/2,gp.tileSize*11/2,new Color(0xFFFFCC),new Color(0xFFD154),new Color(0x002795),buttonFinishState,2);
+    }
+
     public void setupStatus(){
         status[0] = "Set up successfully";
         status[1] = "Unsuitable size";
@@ -428,12 +461,16 @@ public class UI {
         buttonOpeningState.add(instruction);
         buttonOpeningState.add(exit);
 
+        isAddOpeningStateButton = 1;
+
     }
 
     public void removeButtonOpeningState(){
         gp.remove(newGame);
         gp.remove(instruction);
         gp.remove(exit);
+
+        isAddOpeningStateButton = 0;
 
         buttonOpeningState.clear();
     }
@@ -444,6 +481,7 @@ public class UI {
         b4 = new Button("Ship 4");
         b5 = new Button("Ship 5");
         play = new Button("PLAY");
+        back = new Button("Back");
 
         gp.add(b1);
         gp.add(b2);
@@ -451,6 +489,7 @@ public class UI {
         gp.add(b4);
         gp.add(b5);
         gp.add(play);
+        gp.add(back);
 
         buttonSetUpState.add(b1);
         buttonSetUpState.add(b2);
@@ -458,9 +497,9 @@ public class UI {
         buttonSetUpState.add(b4);
         buttonSetUpState.add(b5);
         buttonSetUpState.add(play);
+        buttonSetUpState.add(back);
 
-        isAdd = 1;
-
+        isAddSetUpStateButton = 1;
 
     }
     public void removeButtonSetUpState(){
@@ -470,9 +509,31 @@ public class UI {
         gp.remove(b4);
         gp.remove(b5);
         gp.remove(play);
+        gp.remove(back);
 
         buttonSetUpState.clear();
-        isAdd = 0;
+        isAddSetUpStateButton = 0;
+    }
+
+    public void addButtonFinishState(){
+        newGame1 = new Button("Menu");
+        exit1 = new Button("Exit");
+
+        gp.add(newGame1);
+        gp.add(exit1);
+
+        buttonFinishState.add(newGame1);
+        buttonFinishState.add(exit1);
+
+        isAddFinishStateButton = 1;
+    }
+
+    public void removeButtonFinishState(){
+        gp.remove(newGame1);
+        gp.remove(exit1);
+
+        buttonFinishState.clear();
+        isAddFinishStateButton = 0;
     }
 
     public void drawChosen(int num, int x, int y, int index) {
@@ -581,6 +642,20 @@ public class UI {
             System.out.println("No image");
         }
         return image;
+    }
+    
+    public void drawButton(int x,int y, Color border,Color bg, Color text,ArrayList<Button> l,int num){
+        Border b = BorderFactory.createLineBorder(border,5);
+        for(int i =0 ;i <num;i++){
+            l.get(i).setBackground(bg);
+            l.get(i).setForeground(text);
+            l.get(i).addActionListener(gp.action);
+            l.get(i).setBorderPainted(true);
+            l.get(i).setBorder(b);
+            l.get(i).setBounds(x,y,gp.tileSize*5,gp.tileSize*3/2);
+            l.get(i).setFont(font3);
+            y += gp.tileSize*5/2;
+        }
     }
 
 }
