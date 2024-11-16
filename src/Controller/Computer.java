@@ -19,6 +19,7 @@ public class Computer {
 
     public ArrayList<Ship> ship;
     public boolean check = false;
+    int destroy;
     ArrayList<Coordinate> listHit = new ArrayList<>();
     public int computerChooseX = -1;
     public int computerChooseY = -1;
@@ -30,6 +31,7 @@ public class Computer {
         this.ship3 = new ShipType3();
         this.ship4 = new ShipType4();
         this.ship5 = new ShipType5();
+        destroy = 0;
         setupShipForComputer();
         setUpShipOnBoard();
     }
@@ -194,6 +196,7 @@ public class Computer {
             }
         }
         gp.player.checkDestroy();
+        gp.player.checkLose();
     }
 
     public void setUpShipOnBoard(){
@@ -260,9 +263,18 @@ public class Computer {
                 gp.ui.destroyStatus = s.name;
                 s.isDestroy = 1;
                 check = true;
+                destroy++;
             }
         }
     }
+
+    public void checkLose(){
+        if(destroy == 5){
+            gp.gameState = gp.finishState;
+        }
+
+    }
+
     public int random(int x){
         Random rd = new Random();
         return rd.nextInt(10-x);

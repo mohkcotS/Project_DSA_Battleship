@@ -16,6 +16,9 @@ public class ActionHandler implements ActionListener {
         else if(gp.gameState == gp.setupState){
             setupState(e);
         }
+        else if(gp.gameState == gp.finishState){
+            finishState(e);
+        }
     }
 
     public void openingState(ActionEvent e){
@@ -49,6 +52,9 @@ public class ActionHandler implements ActionListener {
             gp.b.shipSetUp = gp.b.ship5;
             gp.ui.ship = gp.player.ship.get(4);
         }
+        else if(e.getSource() == gp.ui.back){
+            gp.gameState = gp.openingState;
+        }
         else if(e.getSource() == gp.ui.play){
             if(gp.player.canPlay()){
                 gp.gameState = gp.playState;
@@ -65,6 +71,15 @@ public class ActionHandler implements ActionListener {
             if(!gp.player.canPlay()){
                 gp.ui.statusNo = 5;
             }
+        }
+    }
+
+    public void finishState(ActionEvent e){
+        if(e.getSource() == gp.ui.exit1){
+            System.exit(0);
+        }
+        else if(e.getSource() == gp.ui.newGame1){
+            gp.gameState = gp.openingState;
         }
     }
     public void setUpShip() {

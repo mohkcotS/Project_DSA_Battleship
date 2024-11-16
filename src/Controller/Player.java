@@ -17,6 +17,7 @@ public class Player {
 
     public ArrayList<Ship> ship;
     public boolean check;
+    int destroy;
     public Player(GamePanel gp){
         this.gp = gp;
         this.ship = new ArrayList<>();
@@ -25,6 +26,7 @@ public class Player {
         this.ship3 = new ShipType3();
         this.ship4 = new ShipType4();
         this.ship5 = new ShipType5();
+        destroy = 0;
         setupShipForPlayer();
     }
     public void setupShipForPlayer(){
@@ -73,6 +75,7 @@ public class Player {
 
         }
         gp.computer.checkDestroy();
+        gp.computer.checkLose();
     }
 
     public void checkDestroy(){
@@ -82,7 +85,15 @@ public class Player {
                 s.isDestroy = 1;
                 check = true;
                 gp.computer.listHit.clear();
+                destroy++;
             }
+        }
+    }
+
+    public void checkLose(){
+        if(destroy == 5){
+            gp.ui.finish = 1;
+            gp.gameState = gp.finishState;
         }
     }
 
