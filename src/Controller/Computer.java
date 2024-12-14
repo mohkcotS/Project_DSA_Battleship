@@ -272,7 +272,6 @@ public class Computer {
         if(destroy == 5){
             gp.gameState = gp.finishState;
         }
-
     }
 
     public int random(int x){

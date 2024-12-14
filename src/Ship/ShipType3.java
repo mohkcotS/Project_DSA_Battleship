@@ -7,7 +7,7 @@ public class ShipType3 extends Ship {
         this.name = "Ship 3";
         this.size = 4;
         this.c = new Color(0xC9601F);
-        this.color = "Light Apricot";
+        this.color = "Burnt Orange";
         img = setup("Ship/Ship3",96,96);
     }
 }
